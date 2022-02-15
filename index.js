@@ -55,7 +55,7 @@ app.post('/init', (req, res) => {
     });
 })
 app.post('/success', (req,res)=>{
-    res.redirect('http://localhost:3000/success')
+    res.redirect('https://volunteer-network-2be53.web.app/success')
     res.status(200).json(req.body)
 
 })
