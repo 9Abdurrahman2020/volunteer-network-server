@@ -47,21 +47,22 @@ app.post('/init', (req, res) => {
     sslcz.init(data).then(apiResponse => {
         // Redirect the user to payment gateway
         if(apiResponse.GatewayPageURL){
-            res.json(apiResponse.GatewayPageURL)
+            res.json(apiResponse)
         }else{
             return res.status(400).json({message:"Payment session failed"})
         } 
 
     });
 })
-app.post('/success', async(req,res)=>{
+app.post('/success', (req,res)=>{
     res.redirect('http://localhost:3000/success')
     res.status(200).json(req.body)
+
 })
-app.post('/fail', async(req,res)=>{
+app.post('/fail', (req,res)=>{
     res.status(400).json(req.body)
 })
-app.post('/cancel', async(req,res)=>{
+app.post('/cancel', (req,res)=>{
     res.status(200).json(req.body)
 })
 
@@ -76,15 +77,30 @@ const mongodbServer = async() =>{
         const database = client.db('Volunteer_network');
         const causesCollection = database.collection('causes');
         const eventsCollection = database.collection('events');
+        const volunteerCollection = database.collection('volunteers');
 
         // get causes
         app.get('/causes', async(req,res)=>{
             const causes = await causesCollection.find({}).toArray()
             res.json(causes)
         })
+        //get events
         app.get('/events', async(req,res)=>{
             const events = await eventsCollection.find({}).toArray()
             res.json(events)
+        })
+        // post volunteer data
+        app.post('/volunteer', async(req,res)=>{
+            const data = req.body;
+            const response = await volunteerCollection.insertOne(data)
+            res.json(response);
+        })
+        // get volunteer data
+        app.get('/volunteer/:email', async(req,res)=>{
+            const email = req.params.email
+            const query = {email}
+            const volunteer = await volunteerCollection.findOne(query)
+            res.json(volunteer);
         })
 
     }
